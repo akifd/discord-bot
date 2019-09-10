@@ -1,18 +1,28 @@
 import os
 
-import discord
 from dotenv import load_dotenv
+from discord.ext import commands
 
 
 load_dotenv()
 token = os.getenv('DISCORD_TOKEN')
 
-client = discord.Client()
+bot = commands.Bot(command_prefix='!')
 
 
-@client.event
+@bot.event
 async def on_ready():
-    print(f'{client.user} has connected to Discord!')
+    print(f'{bot.user.name} has connected to Discord!')
 
 
-client.run(token)
+@bot.command(name="add")
+async def add(context):
+    await context.send("Add functionality coming soon!")
+
+
+@bot.command(name="list")
+async def list(context):
+    await context.send("List functionality coming soon!")
+
+
+bot.run(token)
