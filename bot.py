@@ -21,13 +21,23 @@ async def on_ready():
 
 
 @bot.command(name="add")
-async def add(context, timestamp):
+async def add(context, *timestamp):
     connection = create_connection()
+    timestamp = " ".join(timestamp)
 
     with connection:
         cursor = connection.cursor()
-        cursor.execute("INSERT INTO event (timestamp) VALUES (?)", (timestamp,))
+
+        cursor.execute(
+            "INSERT INTO event (id, timestamp) VALUES (?, ?)",
+            (None, timestamp),
+        )
         event_id = cursor.lastrowid
+
+        cursor.execute(
+            "INSERT INTO participant (id, event_id, name) VALUES (?, ?, ?)",
+            (None, event_id, context.author.name),
+        )
 
     message = f"Added event #{event_id} on {timestamp}."
 
@@ -37,7 +47,24 @@ async def add(context, timestamp):
 
 @bot.command(name="list")
 async def list(context):
-    await context.send("List functionality coming soon!")
+    connection = create_connection()
+
+    with connection:
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM event")
+        rows = cursor.fetchall()
+
+    messages = []
+    for row in rows:
+        messages.append(f"#{row[0]} {row[1]} [1/5]")
+
+    message = "\n".join(messages)
+
+    if not message:
+        message = "No active events."
+
+    print(message)
+    await context.send(message)
 
 
 bot.run(token)
