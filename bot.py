@@ -62,7 +62,7 @@ async def list(context):
             participant_rows = cursor.fetchall()
 
         messages.append(
-            f"#{event[0]} {event[1]} [1/5]\n" +
+            f"#{event[0]} {event[1]} [{len(participant_rows)}/5]\n" +
             "\n".join(["- {}".format(participant[2]) for participant in participant_rows])
         )
 
