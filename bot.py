@@ -63,7 +63,7 @@ async def list(context):
 
         messages.append(
             f"#{event[0]} {event[1]} [1/5]\n" +
-            "\n".join([participant[2] for participant in participant_rows])
+            "\n".join(["- {}".format(participant[2]) for participant in participant_rows])
         )
 
     message = "\n".join(messages)
