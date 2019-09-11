@@ -20,8 +20,8 @@ async def on_ready():
     print(f'{bot.user.name} has connected to Discord!')
 
 
-@bot.command(name="add", help="Add new event with given name.")
-async def add(context, *timestamp):
+@bot.command(name="create", help="Create new event with given name.")
+async def create(context, *timestamp):
     timestamp = " ".join(timestamp)
 
     if len(timestamp) < 8:
