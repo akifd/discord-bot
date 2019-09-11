@@ -52,11 +52,19 @@ async def list(context):
     with connection:
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM event")
-        rows = cursor.fetchall()
+        event_rows = cursor.fetchall()
 
     messages = []
-    for row in rows:
-        messages.append(f"#{row[0]} {row[1]} [1/5]")
+    for event in event_rows:
+        with connection:
+            cursor = connection.cursor()
+            cursor.execute("SELECT * FROM participant WHERE event_id = ?", (event[0]))
+            participant_rows = cursor.fetchall()
+
+        messages.append(
+            f"#{event[0]} {event[1]} [1/5]\n" +
+            "\n".join([participant[2] for participant in participant_rows])
+        )
 
     message = "\n".join(messages)
 
