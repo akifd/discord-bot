@@ -66,7 +66,7 @@ async def list(context):
             "\n".join(["- {}".format(participant[2]) for participant in participant_rows])
         )
 
-    message = "\n".join(messages)
+    message = "\n\n".join(messages)
 
     if not message:
         message = "No active events."
