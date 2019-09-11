@@ -58,7 +58,7 @@ async def list(context):
     for event in event_rows:
         with connection:
             cursor = connection.cursor()
-            cursor.execute("SELECT * FROM participant WHERE event_id = ?", (event[0]))
+            cursor.execute("SELECT * FROM participant WHERE event_id = ?", (event[0],))
             participant_rows = cursor.fetchall()
 
         messages.append(
