@@ -49,6 +49,8 @@ async def add(context, *timestamp):
 async def list(context):
     connection = create_connection()
 
+    print("=== executing ===")
+
     with connection:
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM event")
@@ -66,7 +68,7 @@ async def list(context):
             "\n".join(["- {}".format(participant[2]) for participant in participant_rows])
         )
 
-    message = "\n\n".join(messages)
+    message = "Listing active events:\n" + "\n\n".join(messages)
 
     if not message:
         message = "No active events."
