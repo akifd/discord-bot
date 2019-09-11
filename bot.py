@@ -130,8 +130,9 @@ async def cancel(context, event_id):
 
         if len(participant_rows) == 0:
             cursor.execute("DELETE FROM event WHERE id = ?", (event_id))
-
-        await context.send(f"Event {event_id} deleted, because all participants parted.")
+            await context.send(
+                f"Event {event_id} deleted, because all participants parted."
+            )
 
 
 bot.run(token)
