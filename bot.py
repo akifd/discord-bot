@@ -25,9 +25,7 @@ async def create(context, *timestamp):
     timestamp = " ".join(timestamp)
 
     if len(timestamp) < 8:
-        message = "Give the event a longer name."
-        print(message)
-        await context.send(message)
+        await context.send("Give the event a longer name.")
         return
 
     connection = create_connection()
@@ -40,18 +38,13 @@ async def create(context, *timestamp):
         cursor.execute("INSERT INTO participant (event_id, name) VALUES (?, ?)",
                        (event_id, context.author.name))
 
-    message = f"Added event #{event_id} on {timestamp}."
-
-    print(message)
-    await context.send(message)
+    await context.send(f"Added event #{event_id} on {timestamp}.")
 
 
 @bot.command(name="delete", help="Delete event with given ID.")
 async def delete(context, event_id):
     if not event_id.isnumeric():
-        message = "Please give ID as a number."
-        print(message)
-        await context.send(message)
+        await context.send("Please give ID as a number.")
         return
 
     connection = create_connection()
@@ -60,9 +53,7 @@ async def delete(context, event_id):
         cursor = connection.cursor()
         cursor.execute("DELETE FROM event WHERE id = (?)", (event_id,))
 
-    message = f"Deleted event #{event_id}."
-    print(message)
-    await context.send(message)
+    await context.send(f"Deleted event #{event_id}.")
 
 
 @bot.command(name="list", help="List active events.")
@@ -91,16 +82,13 @@ async def list(context):
     if not message:
         message = "No active events."
 
-    print(message)
     await context.send(message)
 
 
 @bot.command(name="accept", help="Accept event with given ID.")
 async def accept(context, event_id):
     if not event_id.isnumeric():
-        message = "Please give ID as a number."
-        print(message)
-        await context.send(message)
+        await context.send("Please give ID as a number.")
         return
 
     connection = create_connection()
@@ -111,17 +99,29 @@ async def accept(context, event_id):
                        (event_id, context.author.name))
         participant_rows = cursor.fetchall()
         if len(participant_rows) > 0:
-            message = "You have already accepted the event."
-            print(message)
-            await context.send(message)
+            await context.send("You have already accepted the event.")
             return
 
         cursor.execute("INSERT INTO participant (event_id, name) VALUES (?, ?)",
                        (event_id, context.author.name))
 
-    message = f"{context.author.name} added to event #{event_id}"
-    print(message)
-    await context.send(message)
+    await context.send(f"{context.author.name} added to event #{event_id}")
+
+
+@bot.command(name="cancel", help="Cancel accepting event with given ID.")
+async def cancel(context, event_id):
+    if not event_id.isnumeric():
+        await context.send("Please give ID as a number.")
+        return
+
+    connection = create_connection()
+
+    with connection:
+        cursor = connection.cursor()
+        cursor.execute("DELETE FROM participant WHERE event_id = ? AND name = ?",
+                       (event_id, context.author.name))
+
+    await context.send(f"{context.author.name} removed from event #{event_id}")
 
     with connection:
         cursor = connection.cursor()
@@ -132,5 +132,6 @@ async def accept(context, event_id):
             cursor.execute("DELETE FROM event WHERE id = ?", (event_id))
 
         await context.send(f"Event {event_id} deleted, because all participants parted.")
+
 
 bot.run(token)
