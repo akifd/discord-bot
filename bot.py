@@ -20,9 +20,8 @@ async def on_ready():
     print(f'{bot.user.name} has connected to Discord!')
 
 
-@bot.command(name="add")
+@bot.command(name="add", help="Add new event with given name.")
 async def add(context, *timestamp):
-    connection = create_connection()
     timestamp = " ".join(timestamp)
 
     if len(timestamp) < 8:
@@ -30,6 +29,8 @@ async def add(context, *timestamp):
         print(message)
         await context.send(message)
         return
+
+    connection = create_connection()
 
     with connection:
         cursor = connection.cursor()
@@ -45,7 +46,26 @@ async def add(context, *timestamp):
     await context.send(message)
 
 
-@bot.command(name="list")
+@bot.command(name="delete", help="Delete event with given ID.")
+async def delete(context, event_id):
+    if not event_id.isnumeric():
+        message = "Please give ID as a number."
+        print(message)
+        await context.send(message)
+        return
+
+    connection = create_connection()
+
+    with connection:
+        cursor = connection.cursor()
+        cursor.execute("DELETE FROM event WHERE id = (?)", (event_id,))
+
+    message = f"Deleted event #{event_id}."
+    print(message)
+    await context.send(message)
+
+
+@bot.command(name="list", help="List active events.")
 async def list(context):
     connection = create_connection()
 
@@ -75,10 +95,10 @@ async def list(context):
     await context.send(message)
 
 
-@bot.command(name="accept")
+@bot.command(name="accept", help="Accept event with given ID.")
 async def accept(context, event_id):
     if not event_id.isnumeric():
-        message = "Please give ID as number only."
+        message = "Please give ID as a number."
         print(message)
         await context.send(message)
         return
