@@ -51,6 +51,7 @@ async def delete(context, event_id):
 
     with connection:
         cursor = connection.cursor()
+        cursor.execute("PRAGMA foreign_keys = ON")
         cursor.execute("DELETE FROM event WHERE id = (?)", (event_id,))
 
     await context.send(f"Deleted event #{event_id}.")
