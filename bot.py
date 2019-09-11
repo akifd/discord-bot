@@ -27,17 +27,11 @@ async def add(context, *timestamp):
 
     with connection:
         cursor = connection.cursor()
-
-        cursor.execute(
-            "INSERT INTO event (id, timestamp) VALUES (?, ?)",
-            (None, timestamp),
-        )
+        cursor.execute("INSERT INTO event (timestamp) VALUES (?)", (timestamp,))
         event_id = cursor.lastrowid
 
-        cursor.execute(
-            "INSERT INTO participant (id, event_id, name) VALUES (?, ?, ?)",
-            (None, event_id, context.author.name),
-        )
+        cursor.execute("INSERT INTO participant (event_id, name) VALUES (?, ?)",
+                       (event_id, context.author.name))
 
     message = f"Added event #{event_id} on {timestamp}."
 
