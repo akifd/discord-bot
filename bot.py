@@ -49,8 +49,6 @@ async def add(context, *timestamp):
 async def list(context):
     connection = create_connection()
 
-    print("=== executing ===")
-
     with connection:
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM event")
@@ -73,6 +71,35 @@ async def list(context):
     if not message:
         message = "No active events."
 
+    print(message)
+    await context.send(message)
+
+
+@bot.command(name="accept")
+async def accept(context, event_id):
+    if not event_id.isnumeric():
+        message = "Please give ID as number only."
+        print(message)
+        await context.send(message)
+        return
+
+    connection = create_connection()
+
+    with connection:
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM participant WHERE event_id = ? AND name = ?",
+                       (event_id, context.author.name))
+        participant_rows = cursor.fetchall()
+        if len(participant_rows) > 0:
+            message = "You have already accepted the event."
+            print(message)
+            await context.send(message)
+            return
+
+        cursor.execute("INSERT INTO participant (event_id, name) VALUES (?, ?)",
+                       (event_id, context.author.name))
+
+    message = f"{context.author.name} added to event #{event_id}"
     print(message)
     await context.send(message)
 
