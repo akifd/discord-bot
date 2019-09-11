@@ -123,5 +123,14 @@ async def accept(context, event_id):
     print(message)
     await context.send(message)
 
+    with connection:
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM participant WHERE event_id = ?", (event_id,))
+        participant_rows = cursor.fetchall()
+
+        if len(participant_rows) == 0:
+            cursor.execute("DELETE FROM event WHERE id = ?", (event_id))
+
+        await context.send(f"Event {event_id} deleted, because all participants parted.")
 
 bot.run(token)
