@@ -25,6 +25,12 @@ async def add(context, *timestamp):
     connection = create_connection()
     timestamp = " ".join(timestamp)
 
+    if len(timestamp) < 8:
+        message = "Give the event a longer name."
+        print(message)
+        await context.send(message)
+        return
+
     with connection:
         cursor = connection.cursor()
         cursor.execute("INSERT INTO event (timestamp) VALUES (?)", (timestamp,))
